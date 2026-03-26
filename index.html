@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Точка Подсчета · Судейский Калькулятор Вольных Выступлений по Спортивной Скакалке</title>
+
+  <!-- ══ PWA / Установка на экран ══ -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#111110" id="meta-theme">
+
+  <!-- iOS / Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ТО Судья">
+  <link rel="apple-touch-icon" href="./icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="72x72"   href="./icons/icon-72.png">
+  <link rel="apple-touch-icon" sizes="96x96"   href="./icons/icon-96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+
+  <!-- Android / Chrome -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+
+  <!-- SEO / Описание -->
+  <meta name="description" content="Профессиональный судейский калькулятор для вольных выступлений по спортивной скакалке. Сложность, Презентация, Технический раздел.">
+  <meta name="author" content="Данильченко Юрий · Точка Отрыва">
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-mark">ТО</div>
+      <div class="header-titles">
+        <span class="app-title">Точка Подсчета</span>
+        <span class="app-sub">Судейский Калькулятор Вольных Выступлений по Спортивной Скакалке</span>
+      </div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Переключить тему">
+      <span class="theme-icon">☀</span>
+    </button>
+  </header>
+
+  <nav class="top-tabs" role="tablist" aria-label="Разделы">
+    <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="complexity"><span class="tab-icon">⬡</span>Сложность</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="presentation"><span class="tab-icon">◈</span>Презентация</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="technical"><span class="tab-icon">⚠</span>Технический</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="about"><span class="tab-icon">◉</span>О нас</button>
+  </nav>
+
+  <main id="app" class="content" tabindex="-1">
+
+    <section id="display" class="display" aria-live="polite"></section>
+
+    <!-- ══ СЛОЖНОСТЬ ══ -->
+    <section id="tab-complexity" class="tab-panel active" role="tabpanel">
+      <button class="btn-zero" data-level="0"><span class="lv-num">0</span><span class="lv-label">Пропуск / Стоп</span></button>
+      <div class="grid-complexity">
+        <button class="btn-level" data-level="1"><span class="lv-num">1</span><span class="lv-label">Базовый</span></button>
+        <button class="btn-level" data-level="2"><span class="lv-num">2</span><span class="lv-label">Лёгкий</span></button>
+        <button class="btn-level" data-level="3"><span class="lv-num">3</span><span class="lv-label">Средний</span></button>
+        <button class="btn-level" data-level="4"><span class="lv-num">4</span><span class="lv-label">Сложный</span></button>
+        <button class="btn-level" data-level="5"><span class="lv-num">5</span><span class="lv-label">Мастер</span></button>
+        <button class="btn-level" data-level="6"><span class="lv-num">6</span><span class="lv-label">Элита</span></button>
+      </div>
+      <div class="actions-row">
+        <button class="action-btn erase"     id="erase-last"><span>⌫</span> Стереть</button>
+        <button class="action-btn danger"    id="reset-complexity">Сбросить</button>
+        <button class="action-btn secondary" id="toggle-stats"><span>≡</span> Статистика</button>
+      </div>
+      <div id="complexity-stats" class="stats hidden">
+        <h3 class="stats-title">Подробная статистика</h3>
+        <div class="stats-seq-block">
+          <div class="label">Последовательность навыков</div>
+          <div id="skills-seq" class="mono seq-display"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Сумма навыков</div><div id="skills-sum" class="mono stat-big"></div></div>
+          <div class="stat-card"><div class="label">Элементов</div><div id="skills-amount" class="mono stat-big"></div></div>
+          <div class="stat-card"><div class="label">Коэффициент</div><div id="skills-coef" class="mono stat-big"></div></div>
+          <div class="stat-card full-width"><div class="label">По уровням</div><ul id="skills-counts" class="counts-list"></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ПРЕЗЕНТАЦИЯ ══ -->
+    <section id="tab-presentation" class="tab-panel" role="tabpanel">
+      <div class="criteria-block">
+        <h3 class="block-title"><span class="block-icon">◈</span> Презентация <span class="block-max">макс. 2.0</span></h3>
+        <ul class="criteria-list" id="presentation-list">
+          <li data-crit="Артистизм"><span class="crit-name">Артистизм</span><div class="pm-controls"></div></li>
+          <li data-crit="Исполнение"><span class="crit-name">Исполнение</span><div class="pm-controls"></div></li>
+          <li data-crit="Комбинации"><span class="crit-name">Комбинации</span><div class="pm-controls"></div></li>
+          <li data-crit="Двигательные навыки"><span class="crit-name">Двигательные навыки</span><div class="pm-controls"></div></li>
+          <li data-crit="Положение тела"><span class="crit-name">Положение тела</span><div class="pm-controls"></div></li>
+          <li data-crit="Синхронность"><span class="crit-name">Синхронность</span><div class="pm-controls"></div></li>
+        </ul>
+      </div>
+      <div class="criteria-block">
+        <h3 class="block-title"><span class="block-icon">✦</span> Креативность <span class="block-max">макс. 1.0</span></h3>
+        <ul class="criteria-list" id="creativity-list">
+          <li data-crit="Изложение"><span class="crit-name">Изложение</span><div class="pm-controls"></div></li>
+          <li data-crit="Разнообразие элементов"><span class="crit-name">Разнообразие</span><div class="pm-controls"></div></li>
+          <li data-crit="Уникальность"><span class="crit-name">Уникальность</span><div class="pm-controls"></div></li>
+          <li data-crit="Вариативность"><span class="crit-name">Вариативность</span><div class="pm-controls"></div></li>
+        </ul>
+      </div>
+      <div class="actions-row">
+        <button class="action-btn danger" id="reset-presentation">Сбросить</button>
+      </div>
+    </section>
+
+    <!-- ══ ТЕХНИЧЕСКИЙ ══ -->
+    <section id="tab-technical" class="tab-panel" role="tabpanel">
+
+      <nav class="disc-tabs" role="tablist">
+        <button class="disc-btn active" data-disc="single">🪢 Одиночная</button>
+        <button class="disc-btn"        data-disc="double">✌️ Две скакалки</button>
+        <button class="disc-btn"        data-disc="team">👥 Командное</button>
+      </nav>
+
+      <!-- ─── ОДИНОЧНАЯ ─── -->
+      <div class="disc-panel active" id="disc-single">
+        <div class="tech-score-bar">
+          <span class="tech-score-label">Обязательные навыки</span>
+          <span class="tech-score-val" id="disp-single-req">0.0</span>
+        </div>
+        <div class="req-block">
+          <div class="req-item" data-disc="single" data-key="single_music">
+            <div class="req-name">1. Использование музыки</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Только начало или только конец</span>
+              <span class="hint h2">И начало, и конец выступления</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="single" data-key="single_power">
+            <div class="req-name">2. Силовые (спец) навыки</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Один эл-т: акро / гимн / сила</span>
+              <span class="hint h2">Два успешно выполненных эл-та</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="single" data-key="single_dir">
+            <div class="req-name">3. Изменение направления вращения</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Одна смена направления</span>
+              <span class="hint h2">Две смены направления</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="single" data-key="single_space">
+            <div class="req-name">4. Пространственная динамика</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Посещение 2–3 квадратов</span>
+              <span class="hint h2">Посещение всех 4 квадратов</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="single" data-key="single_manip">
+            <div class="req-name">5. Манипуляции со скакалкой</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Один крест / намотка / релиз</span>
+              <span class="hint h2">Два креста / намотки / релиза</span>
+            </div>
+          </div>
+        </div>
+        <div class="tech-score-bar penalty-bar">
+          <span class="tech-score-label">Штрафы</span>
+          <span class="tech-score-val penalty-val" id="disp-single-pen">0.0</span>
+        </div>
+        <div class="penalty-block">
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="s_p_time">−0,4&ensp;Превышение / недостаток времени</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="s_p_music">−0,2&ensp;Тихая или громкая музыка</button>
+          <button class="pen-btn" data-pen="0.2" data-once="false" data-key="s_p_space">−0,2&ensp;Нарушение пространства</button>
+          <button class="pen-btn" data-pen="3"   data-once="false" data-key="s_p_acc">−3,0&ensp;Потеря аксессуара</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="s_p_d1">−0,2&ensp;Задержка (выступление)</button>
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="s_p_d2">−0,4&ensp;Задержка (не выход на площадку)</button>
+        </div>
+        <div class="actions-row">
+          <button class="action-btn danger disc-reset" data-disc="single">Сбросить всё</button>
+        </div>
+      </div>
+
+      <!-- ─── ДВЕ СКАКАЛКИ ─── -->
+      <div class="disc-panel" id="disc-double">
+        <div class="tech-score-bar">
+          <span class="tech-score-label">Обязательные навыки</span>
+          <span class="tech-score-val" id="disp-double-req">0.0</span>
+        </div>
+        <div class="req-block">
+          <div class="req-item" data-disc="double" data-key="d_entry">
+            <div class="req-name">1. Вступление и завершение</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Только начало или только конец</span>
+              <span class="hint h2">И начало, и конец выступления</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="double" data-key="d_roles">
+            <div class="req-name">2. Смены ролей</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Более одной смены, но не все роли</span>
+              <span class="hint h2">Каждый — и крутящий, и прыгающий</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="double" data-key="d_manip">
+            <div class="req-name">3. Манипуляции</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Одна изоляция или один выброс</span>
+              <span class="hint h2">Два выброса / две изоляции / по одному каждого</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="double" data-key="d_dir">
+            <div class="req-name">4. Изменение направления</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Одна смена направления</span>
+              <span class="hint h2">Две смены направления</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="double" data-key="d_special">
+            <div class="req-name">5. Специальные навыки</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">Один силовой / акроб. прыжок / мультипрыжок</span>
+              <span class="hint h2">Два силовых / акроб. прыжка / мультипрыжка</span>
+            </div>
+          </div>
+        </div>
+        <div class="tech-score-bar penalty-bar">
+          <span class="tech-score-label">Штрафы</span>
+          <span class="tech-score-val penalty-val" id="disp-double-pen">0.0</span>
+        </div>
+        <div class="penalty-block">
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="d_p_time">−0,4&ensp;Превышение / недостаток времени</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="d_p_music">−0,2&ensp;Тихая или громкая музыка</button>
+          <button class="pen-btn" data-pen="0.2" data-once="false" data-key="d_p_space">−0,2&ensp;Нарушение пространства</button>
+          <button class="pen-btn" data-pen="3"   data-once="false" data-key="d_p_acc">−3,0&ensp;Потеря аксессуара</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="d_p_d1">−0,2&ensp;Задержка (выступление)</button>
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="d_p_d2">−0,4&ensp;Задержка (не выход на площадку)</button>
+        </div>
+        <div class="actions-row">
+          <button class="action-btn danger disc-reset" data-disc="double">Сбросить всё</button>
+        </div>
+      </div>
+
+      <!-- ─── КОМАНДНОЕ ─── -->
+      <div class="disc-panel" id="disc-team">
+        <div class="tech-score-bar">
+          <span class="tech-score-label">Обязательные навыки</span>
+          <span class="tech-score-val" id="disp-team-req">0.0</span>
+        </div>
+        <div class="req-block">
+          <div class="req-item" data-disc="team" data-key="t_group">
+            <div class="req-name">1. Групповое выполнение</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">2–3 спортсмена — навыки на одиночных</span>
+              <span class="hint h2">Мин. 4 спортсмена — навыки на одиночных</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="team" data-key="t_double">
+            <div class="req-name">2. Две скакалки</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">2–3 спортсмена — с изменением направления</span>
+              <span class="hint h2">Мин. 4 спортсмена — с изменением направления</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="team" data-key="t_wheel">
+            <div class="req-name">3. Колесо</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">2–3 спортсмена демонстрируют навык</span>
+              <span class="hint h2">4 спортсмена демонстрируют навык</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="team" data-key="t_long">
+            <div class="req-name">4. Длинная скакалка (7м)</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">2–3 спортсмена демонстрируют навык</span>
+              <span class="hint h2">4 спортсмена демонстрируют навык</span>
+            </div>
+          </div>
+          <div class="req-item" data-disc="team" data-key="t_travel">
+            <div class="req-name">5. Путешественник / Взаимодействие</div>
+            <div class="tri-controls">
+              <button class="tri-btn active" data-val="0">0</button>
+              <button class="tri-btn" data-val="0.1">0,1</button>
+              <button class="tri-btn" data-val="0.2">0,2</button>
+            </div>
+            <div class="req-hints">
+              <span class="hint h0 active-hint">Не выполнено</span>
+              <span class="hint h1">2–3 спортсмена — «черпак» или «совок»</span>
+              <span class="hint h2">4 спортсмена — «черпак» или «совок»</span>
+            </div>
+          </div>
+        </div>
+        <div class="tech-score-bar penalty-bar">
+          <span class="tech-score-label">Штрафы</span>
+          <span class="tech-score-val penalty-val" id="disp-team-pen">0.0</span>
+        </div>
+        <div class="penalty-block">
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="t_p_time">−0,4&ensp;Превышение / недостаток времени</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="t_p_music">−0,2&ensp;Тихая или громкая музыка</button>
+          <button class="pen-btn" data-pen="0.2" data-once="false" data-key="t_p_space">−0,2&ensp;Нарушение пространства</button>
+          <button class="pen-btn" data-pen="3"   data-once="false" data-key="t_p_acc">−3,0&ensp;Потеря аксессуара</button>
+          <button class="pen-btn" data-pen="0.2" data-once="true"  data-key="t_p_d1">−0,2&ensp;Задержка (выступление)</button>
+          <button class="pen-btn" data-pen="0.4" data-once="true"  data-key="t_p_d2">−0,4&ensp;Задержка (не выход на площадку)</button>
+        </div>
+        <div class="actions-row">
+          <button class="action-btn danger disc-reset" data-disc="team">Сбросить всё</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══ О НАС ══ -->
+    <section id="tab-about" class="tab-panel" role="tabpanel">
+      <div class="about-hero">
+        <div class="about-logo">ТО</div>
+        <h2 class="about-app-name">Точка Подсчета</h2>
+        <p class="about-version">Версия 1.2 · 2026</p>
+      </div>
+      <div class="about-card author-card">
+        <div class="about-avatar">ЮД</div>
+        <div class="about-author-info">
+          <div class="about-author-name">Данильченко Юрий Леонидович</div>
+          <div class="about-author-role">Идея, дизайн и разработка</div>
+          <div class="about-author-tags">
+            <span class="tag">Цирковой артист</span>
+            <span class="tag">Тренер по акробатике</span>
+            <span class="tag">Тренер по спортивной скакалке</span>
+            <span class="tag">Судья 2й категории</span>
+            <span class="tag">Глава по Двум скакалкам в метод комитете</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-card about-desc-card">
+        <h3 class="about-desc-title">📋 О приложении</h3>
+        <p class="about-desc-text"><strong>Точка Подсчёта</strong> — профессиональный судейский калькулятор для вольных выступлений по спортивной скакалке. Создан практикующим судьёй.</p>
+        <p class="about-desc-text">Три раздела судейства:</p>
+        <ul class="about-desc-list">
+          <li>⬡ <strong>Сложность</strong> — ввод уровней навыков 0–6 в порядке выступления, автоматический подсчёт суммы и среднего коэффициента</li>
+          <li>◈ <strong>Презентация</strong> — оценка по критериям (+/✓/−) с расчётом итогового диапазона баллов</li>
+          <li>⚠ <strong>Технический раздел</strong> — проверка выполнения обязательных навыков (0 / 0,1 / 0,2) и фиксация штрафов</li>
+        </ul>
+        <p class="about-desc-text">Работает <strong>офлайн</strong> — не требует интернета на соревнованиях. Поддерживается тёмная тема, защита от случайного сброса данных и удобное управление одной рукой.</p>
+      </div>
+      <!-- Установка PWA -->
+      <div class="about-card pwa-install-card" id="pwa-install-card" style="display:none">
+        <h3 class="feedback-title">📲 Установить приложение</h3>
+        <p class="feedback-desc">Установите на экран — работает как приложение, без браузера.</p>
+        <button class="feedback-btn" id="pwa-install-btn" style="background:#111110;color:#fff;border:none;cursor:pointer;">
+          ⬇ Установить на экран
+        </button>
+      </div>
+      <div class="about-card feedback-card">
+        <h3 class="feedback-title">📬 Обратная связь</h3>
+        <p class="feedback-desc">Нашли ошибку? Есть идея для улучшения? Напишите мне.</p>
+        <a href="https://t.me/iuriletics" target="_blank" class="feedback-btn tg-btn">
+          <span class="tg-btn-icon">✈</span> Написать в Telegram
+        </a>
+      </div>
+      <div class="about-footer">
+        <p>© 2025 Данильченко Юрий · Точка Отрыва</p>
+        <p class="about-footer-sub">Все права защищены</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./app.js"></script>
+
+  <!-- ══ Регистрация Service Worker + PWA Install ══ -->
+  <script>
+    // Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW зарегистрирован:', reg.scope))
+          .catch(err => console.log('SW ошибка:', err));
+      });
+    }
+
+    // Кнопка установки (для Android/Chrome)
+    let deferredPrompt;
+    const installCard = document.getElementById('pwa-install-card');
+    const installBtn  = document.getElementById('pwa-install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installCard) installCard.style.display = 'block';
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          if (installCard) installCard.style.display = 'none';
+        }
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if (installCard) installCard.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
